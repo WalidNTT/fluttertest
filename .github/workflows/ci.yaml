@@ -251,7 +251,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_USER_NAME: ${GITHUB_ACTOR}
-          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
       
   #   steps:
   #     - uses: actions/checkout@v2
@@ -305,13 +305,13 @@ jobs:
       - name: Publish with python 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
         run: |
           mv pipeline_scripts/*.py pipeline_scripts/*.jinja2 pipeline_scripts/*.sh .
           python3 --version
           pip install jinja2 qrcode pillow
           mkdir public
-          python3 html_render.py https://walidntt.github.io/fluttertest/ $GITHUB_API_URL/users/$GITHUB_ACTOR/packages/maven/testgroup.test 
+          python3 html_render.py https://walidntt.github.io/fluttertest/ $GITHUB_API_URL/users/$GITHUB_ACTOR/packages/maven/fluttertest.test ${{ env.PROJECT_TOKEN }}
           mv pipeline_scripts/*.css public/
           mv pipeline_scripts/*.png public/
           echo 0 > .job_status
