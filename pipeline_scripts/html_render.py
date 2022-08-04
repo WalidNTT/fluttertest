@@ -17,7 +17,7 @@ def url_request(url,token):
     print(url)
     try:
       request = urllib.request.Request(url)
-      request.add_header('GITHUB_TOKEN',token)
+      request.add_header('PROJECT_TOKEN',token)
       content = urllib.request.urlopen(request).read().decode('utf-8')
       json_content = json.loads(content)
     except HTTPError:
