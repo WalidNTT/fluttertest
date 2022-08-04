@@ -1,0 +1,330 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+  pull_request:
+    branches: [ main ]  
+
+env:
+  flutter_version: "3.0.3"
+  flutter_channel: 'stable'
+  java_version: "12.x"
+
+  # run jobs to test and build the android and ios app
+jobs:
+  # setup dependencies on flutter
+  setup:
+    name: Get flutter dependencies
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            flutter_path: /opt/hostedtoolcache/flutter
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.flutter_path }}
+          key: ${{ runner.os }}-flutter-install-cache-${{ env.flutter_version }}
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ env.flutter_channel }}
+          flutter_version: ${{ env.flutter_version }}
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      - name: Lint
+        run: flutter format --dry-run . --set-exit-if-changed
+
+  # code_quality:
+  #   name: Dart-code-metrics-actions
+  #   runs-on: ubuntu-latest
+  #   needs: setup
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Cache Flutter
+  #       id: cache-flutter
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: /opt/hostedtoolcache/flutter
+  #         key: ${{ runner.os }}-flutter-install-cache-${{ env.flutter_version }}
+  #     - uses: subosito/flutter-action@v1
+  #       with:
+  #         channel: ${{ env.flutter_channel }}
+  #         flutter_version: ${{ env.flutter_version }}
+  #     - name: Install Flutter dependencies
+  #       run: |
+  #         flutter upgrade
+  #         flutter pub get
+  #     - name: dart-code-metrics
+  #       uses: dart-code-checker/dart-code-metrics-action@v2
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Analyze and Test
+      #   run: |
+      #     ./tool/ci.sh
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     file: coverage/lcov.info
+
+  # run linting and unit test
+  # flutter_test:
+  #   name: Run flutter test and analyze
+  #   runs-on: ${{ matrix.os }}
+  #   needs: setup
+
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest]
+  #       include:
+  #         - os: ubuntu-latest
+  #           flutter_path: /opt/hostedtoolcache/flutter
+  #     fail-fast: false
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-java@v1
+  #       with: 
+  #         java-version: ${{ env.java_version }}
+  #     - name: Cache Flutter
+  #       id: cache-flutter
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ matrix.flutter_path }}
+  #         key: ${{ runner.os }}-flutter-install-cache-${{ env.flutter_version }}
+  #     - uses: subosito/flutter-action@v1
+  #       with:
+  #         channel: ${{ env.flutter_channel }}
+  #         flutter_version: ${{ env.flutter_version }}
+  #     - name: Install dependencies
+  #       run: flutter pub get
+  #     - name: Lint
+  #       run: flutter analyze
+  #     - name: Test
+  #       run: flutter test
+
+  # build android app
+  build_android:
+    name: Build Android APK
+    runs-on: ${{ matrix.os }}
+    needs: [setup]
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            flutter_path: /opt/hostedtoolcache/flutter
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # - name: Install Ruby 
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: ${{ env.ruby_version }}
+      #     bundler-cache: true
+      - name: Install Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.java_version }}
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v1
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter-install-cache-${{ env.flutter_version }}
+          # restore-keys: |
+          #   ${{ runner.os }}-flutter-cache-
+
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ env.flutter_channel }}
+          flutter_version: ${{ env.flutter_version }}
+
+      # - name: Decoding android/key.properties
+      #   run: echo "${{ secrets.KEY_PROPERTIES_PROD  }}" | base64 --decode > android/key.properties
+
+      # - name: Decoding android/neumodore_key.jks
+      #   run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/key.jks
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+      - name: Build APK
+        run: flutter build apk --debug --split-per-abi
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          release_branches: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event_name != 'pull_request'
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          artifacts: "build/app/outputs/apk/debug/*.apk" # build/app/outputs/bundle/release/*.aab"
+          token: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event_name != 'pull_request'
+      - name: Save APK to Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: APK
+          path: build/app/outputs/apk/debug/*.apk
+          retention-days: 3    
+
+      # - name: Deploy to github pages
+      #   uses: awb-pw/deploy-to-github-pages-action@1.1.1
+      #   env:
+      #     AUTHOR: walidntt
+      #     BUILD_PATH: build/app/outputs/apk/debug/*.apk
+      #     GITHUB_PAGE_NAME: walidntt.github.io
+      #     PA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: pubilsh on Github pages
+      #   uses: bluefireteam/flutter-gh-pages@v7
+      #   with:
+      #     baseHref: /Flutter/
+
+      # - name: Build APPBUNDLE
+      #   run: flutter build appbundle --release
+      # - name: Create Github Release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     artifacts: "build/app/outputs/apk/release/*.apk,build/app/outputs/bundle/release/*.aab"
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Save APPBUNDLE to Artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: APPBUNDLE
+      #     path: build/app/outputs/bundle/release/app-release.aab
+  
+  # build ios app
+  # build_ios:
+  #   name: Build flutter (iOS)
+  #   runs-on: macos-latest
+  #   needs: [ setup, code_quality, flutter_test ]
+  #   steps:
+  #     - name: say hello
+  #       run: echo "Hello World"
+
+  publish:
+    runs-on: ubuntu-latest 
+    needs: [build_android]
+    permissions: 
+      contents: read
+      packages: write 
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+  #     # - run: gradle --version
+  #     # - run: gradle init
+  #     # - name: Validate Gradle wrapper
+  #     #   uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+  #     # - name: Publish package
+  #     #   uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
+  #     #   with:
+  #     #     arguments: publish
+  #     #     gradle-version: 7.5
+  #     #   env:
+  #     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Github Packages
+        run: ./gradlew publish --stacktrace
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_USER_NAME: ${GITHUB_ACTOR}
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+      
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-java@v1
+  #       with:
+  #         java-version: ${{ env.java_version }}
+  #     - name: Publish package
+  #       run: gradle -Pversion=${{ github.event.release.tag_name }} build publish
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Publish artifact
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
+        # If we split on '/' and take the 3rd value,
+        # we can get the release name.
+        # run: |
+        #   NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
+        #   echo "New version: ${NEW_VERSION}"
+        #   echo "Github username: ${GITHUB_ACTOR}"
+        #   ./gradlew -Pversion=${NEW_VERSION} publish
+
+      # - name: Release
+      #   uses: mg-smartrent/github-actions-maven-release@v2.6
+      #   with:
+      #     release-branch-name: "master"
+      #     git-release-bot-name: "ReleaseBot"
+      #     git-release-bot-email: "release.bot@smartrent.com"
+      #     access-token: ${GITHUB_TOKEN}     
+      #     # Publish artifacts to GitHub Packages
+      #     maven-publish-args: "-Dskip.unit.tests=true -Dskip.integration.tests=true"
+      #     maven-release-publish: "true"
+      #     maven-snapshot-publish: "true"
+
+  pages:
+    name: Publish to github page 
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-latest
+    needs: [build_android, publish]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y python3 pip jq
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: APK
+          path: build/app/outputs/apk/debug/*.apk
+      - name: Publish with python 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+        run: |
+          mv pipeline_scripts/*.py pipeline_scripts/*.jinja2 pipeline_scripts/*.sh .
+          python3 --version
+          pip install jinja2 qrcode pillow
+          mkdir public
+          python3 html_render.py https://walidntt.github.io/fluttertest/ $GITHUB_API_URL/users/$GITHUB_ACTOR/packages/maven/testgroup.test 
+          mv pipeline_scripts/*.css public/
+          mv pipeline_scripts/*.png public/
+          echo 0 > .job_status
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+  
+  # Deploy:
+  #   name: Upload beta
+  #   runs-on: ubuntu-latest
+  #   needs: [ setup, code_quality, flutter_test, build_android, build_ios, github_pages ]
+  #   steps:
+  #     - name: say hello
+  #       run: echo "Hello World"

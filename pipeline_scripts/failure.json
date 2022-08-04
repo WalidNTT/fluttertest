@@ -1,0 +1,62 @@
+{
+	"text": "Gitlab job succeeded!",
+	"blocks": [
+		{
+			"type": "header",
+			"text": {
+				"type": "plain_text",
+				"text": "Job Failed. :red_circle:",
+				"emoji": true
+			}
+		},
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
+					"text": "*Job*: ${CI_JOB_NAME}"
+				}
+			]
+		},
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
+					"text": "*Project*:\n $CI_PROJECT_NAME"
+				},
+				{
+					"type": "mrkdwn",
+					"text": "*Branch*:\n $CI_COMMIT_REF_NAME"
+                },
+                {
+					"type": "mrkdwn",
+					"text": "*Commit*:\n $CI_COMMIT_SHA"
+				},
+				{
+					"type": "mrkdwn",
+					"text": "*Author*:\n $GITLAB_USER_NAME"
+				}
+			],
+			"accessory": {
+				"type": "image",
+				"image_url": "https://gitlab.com/gitlab-com/gitlab-artwork/raw/master/logo/logo-square.png",
+				"alt_text": "Gitlab logo"
+			}
+		},
+		{
+			"type": "actions",
+			"elements": [
+				{
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "View Job"
+					},
+					"url": "${CI_JOB_URL}"
+				}
+			]
+		}
+	],
+	"channel": "#${SLACK_CHANNEL}"
+}

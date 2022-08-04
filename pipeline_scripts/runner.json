@@ -1,0 +1,23 @@
+{
+	"text": "Offline Runners Detected!",
+	"blocks": [
+		{
+			"type": "header",
+			"text": {
+				"type": "plain_text",
+				"text": "Runners Offline!!. :red_circle:",
+				"emoji": true
+			}
+		},
+		{
+			"type": "section",
+			"fields": [
+				{
+					"type": "mrkdwn",
+					"text": "*Offline Runners*: ${OFFLINE_RUNNERS}"
+				}
+			]
+		}
+	],
+	"channel": "#${SLACK_CHANNEL}"
+}

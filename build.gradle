@@ -19,7 +19,7 @@ plugins {
 
 sourceCompatibility = JavaVersion.VERSION_11
 
-group 'testgroup'
+group 'fluttertest'
 version '1.0.0'
 
 repositories {
@@ -45,6 +45,7 @@ publishing {
     publications {
         gpr(MavenPublication) {
             artifactId='test'
+            artifact "$buildDir/app/outputs/apk/debug/*.apk"
             from(components.java)
         }
     }
