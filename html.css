@@ -1,0 +1,100 @@
+
+.row {
+  margin: 0 -5px;
+  justify-content: center;
+  padding-left: 100px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+
+}
+
+.column {
+  float: left;
+  width: 25%;
+  padding: 0 0px;
+  padding-bottom: 25px;
+}
+
+@media screen and (min-width: 40em) {
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .card {
+    flex: 0 1 calc(25% - 1em);
+  }
+}
+
+@media screen and (min-width: 60em) {
+    .card {
+        flex: 0 1 calc(25% - 1em);
+    }
+}
+
+.card {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+  width: 50%;
+  word-break: break-all; 
+  word-wrap: break-word;
+  font-size: 0.8vw;
+  padding-bottom: 50px;
+  flex: 0 1 calc(25% - 1em);
+}
+
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.abc {
+  border-radius: 5px 5px 0 0;
+}
+
+/* Add some padding inside the card container */
+.container {
+  padding: 2px 16px;
+}
+
+
+.wrapper {
+  position: relative;
+  display: flex;
+  min-width: 100px;
+  padding-bottom: 20px;
+  padding-left: 10px;
+}
+
+.search-icon {
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  width: 14px;
+}
+
+.search {
+  border: 1px solid grey;
+  border-radius: 5px;
+  height: 20px;
+  width: 100%;
+  padding: 2px 23px 2px 30px;
+  outline: 0;
+  background-color: #f5f5f5;
+}
+
+.search:hover, .search:focus {
+  border: 1.5px solid #009688;
+  background-color: white;
+}
