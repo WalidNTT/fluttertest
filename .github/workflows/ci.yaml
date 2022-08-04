@@ -263,6 +263,14 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: ${{ env.java_version }}
+      - uses: actions/delete-package-versions@v3
+        with: 
+          owner: 'walidntt'
+          repo: 'fluttertest'
+          package-name: 'fluttertest.test'
+          token: ${{ secrets.PROJECT_TOKEN }}
+          min-versions-to-keep: 10
+          delete-only-pre-release-versions: "true"
       - name: Publish package
         run: gradle -Pversion=${{ github.event.release.tag_name }} build publish
         env:
