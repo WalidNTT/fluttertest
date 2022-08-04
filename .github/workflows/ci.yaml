@@ -316,7 +316,7 @@ jobs:
           python3 --version
           pip install jinja2 qrcode pillow
           mkdir public
-          python3 html_render.py https://walidntt.github.io/fluttertest/ $GITHUB_API_URL/users/$GITHUB_ACTOR/packages/maven/testgroup.test ${{ secrets.PROJECT_TOKEN }}
+          python3 html_render.py https://walidntt.github.io/fluttertest/ $GITHUB_API_URL/users/$GITHUB_ACTOR/packages/maven/fluttertest.test ${{ secrets.PROJECT_TOKEN }}
           mv pipeline_scripts/*.css public/
           mv pipeline_scripts/*.png public/
           echo 0 > .job_status
