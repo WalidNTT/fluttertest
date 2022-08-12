@@ -49,7 +49,6 @@ def main():
     base_url=None
     Row = namedtuple('Row','name file base_url device file_date file_size token pipeline_url pipeline_id qrcode')
     token = sys.argv[3]
-   # token = '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'
 
     json_content = url_request("{url}?per_page=100".format(url=sys.argv[2]),token)
     
