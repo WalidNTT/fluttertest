@@ -1,16 +1,16 @@
 name: Build documentation
 
 on:
-  push:
-    branches:
-      - main
-      - doc
-    paths:
-      - "docs/**"
-  pull_request:
-    branches:
-      - main
-      - doc
+  [push]
+  #   branches:
+  #     - main
+  #     - doc
+  #   paths:
+  #     - "docs/**"
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - doc
 
 jobs:
   asciidocs:
