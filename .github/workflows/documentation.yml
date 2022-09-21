@@ -26,10 +26,10 @@ jobs:
           program: "asciidoctor-pdf -a allow-uri-read -D . README.adoc"  
 
       - id: bump
-        uses: zwaldowski/match-label-action@v1
+        uses: zwaldowski/match-label-action@v2
         with:
-          allowed_multiple: major, minor, patch 
-      - uses: zwaldowski/semver-release-action@v1
+          allowed: major, minor, patch 
+      - uses: zwaldowski/semver-release-action@v2
         with:
           bump: ${{ steps.bump.outputs.match }}
           github_token: ${{ secrets.GITHUB_TOKEN }}      
