@@ -1,5 +1,9 @@
 # fluttertest
-
+:toc:
+:toclevels: 2
+:author:    NTT Data (Digital Experience Accelerator)
+:date:      2022
+:docinfo1:
 A new Flutter project.
 
 ## Getting Started
