@@ -20,14 +20,14 @@ jobs:
         with:
           program: "asciidoctor-pdf -a allow-uri-read -D . README.adoc"  
 
-      - id: bump
-        uses: zwaldowski/match-label-action@v1
-        with:
-          allowed: major,minor,patch
-      - uses: zwaldowski/semver-release-action@v1
-        with:
-          bump: ${{ steps.bump.outputs.match }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}      
+      # - id: bump
+      #   uses: zwaldowski/match-label-action@v1
+      #   with:
+      #     allowed: major,minor,patch
+      # - uses: zwaldowski/semver-release-action@v1
+      #   with:
+      #     bump: ${{ steps.bump.outputs.match }}
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}      
 
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v2
