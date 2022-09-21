@@ -25,12 +25,10 @@ jobs:
         with:
           program: "asciidoctor-pdf -a allow-uri-read -D . README.adoc"  
 
-  bump:
-    steps:  
       - id: bump
         uses: zwaldowski/match-label-action@v2
         with:
-          allowed: major, minor, patch 
+          allowed: patch
       - uses: zwaldowski/semver-release-action@v2
         with:
           bump: ${{ steps.bump.outputs.match }}
