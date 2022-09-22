@@ -30,7 +30,7 @@ jobs:
       - id: bump
         uses: zwaldowski/match-label-action@v2
         with:
-          allowed: patch
+          allowed: minor
       - uses: zwaldowski/semver-release-action@v2
         with:
           bump: ${{ steps.bump.outputs.match }}
