@@ -22,21 +22,12 @@ samples, guidance on mobile development, and a full API reference.
 include::docs/tools.adoc[]
 
 
-[format="csv"]
-[options="header",cols="4",,s,,m"]
-|===========================
-Version No.,Author,PR No.,Date
-1.0.0,Walid,#1000,27/09/2022
-1.0.1,Anthony,#1001,28/09/2022
-
-|===========================
-
 .Document Versions
 [options="header,footer"]
 |=======================
-|Version No.|Author   |PR No. |Date       |
-|1.0.0      |Walid    |#1000  |27/09/2022 |
-|1.0.1      |Anthony  |#1001  |28/09/2022 |
-|3          |Item 3   |c      |           |
-|6          |Three ite|d      |           |
+|Version No.|Author   |PR No. |Date       
+|1.0.0      |Walid    |#1000  |27/09/2022 
+|1.0.1      |Anthony  |#1001  |28/09/2022 
+|1.1.0      |Longer Name|#1100|29/09/2022           
+|           |         |       |           
 |=======================

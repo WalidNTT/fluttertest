@@ -25,16 +25,7 @@ jobs:
       - name: Build PDF
         uses: avattathil/asciidoctor-action@master
         with:
-          program: "asciidoctor-pdf -a allow-uri-read -D . README.adoc"  
-
-      - id: bump
-        uses: zwaldowski/match-label-action@v2
-        with:
-          allowed:
-      - uses: zwaldowski/semver-release-action@v2
-        with:
-          bump: ${{ steps.bump.outputs.match }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}      
+          program: "asciidoctor-pdf -a allow-uri-read -D . README.adoc"     
 
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v2
