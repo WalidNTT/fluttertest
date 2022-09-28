@@ -20,3 +20,12 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 include::docs/tools.adoc[]
+
+
+[format="csv"]
+[options="header",cols=",,s,,m"]
+|===========================
+Version No.,Author,PR No.,Date
+1.0.0,Walid,#1000,27/09/2022
+1.0.1,Anthony,#1001,28/09/2022
+|===========================

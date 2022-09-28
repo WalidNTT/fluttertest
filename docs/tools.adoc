@@ -8,3 +8,5 @@ testing via version
 testing without allowed
 
 testing empty allowed
+
+Adding a table
